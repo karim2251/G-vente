@@ -1,0 +1,50 @@
+version: '3'
+# ---------------------------------------
+# change this
+#  target: 'http://localhost:3000',
+# to this put the name of contaner
+#  target: 'http://productsserver:3000',
+# ---------------------------------------
+
+services:
+  
+  app:
+    build: .
+    ports:
+      - "4000:4000"
+    volumes:
+      - path_your_project:/usr/src/app
+    depends_on:
+      - productsserver
+      - userserver
+    networks:
+      - my_network
+
+  productsserver:
+    build: ./ProductsServer
+    ports:
+      - "3000:3000"
+    volumes:
+      - path_your_productsserver_file:/usr/src/app
+    environment:
+       MONGODB_URL: "mongodb://mongo1/gestionVenteJS"
+       HTTP_PROXY: "http://app:4000"
+    networks:
+      - my_network
+
+  userserver:
+    build: ./UserServer
+    ports:
+      - "3500:3500"
+    volumes:
+      - path_your_userserver_file:/usr/src/app
+    environment:
+       MONGODB_URL: "mongodb://mongo1/gestionVenteJS"
+       HTTP_PROXY: "http://app:4000"
+
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    external: true
